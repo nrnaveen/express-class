@@ -1,0 +1,82 @@
+{% extends '../layout.twig' %}
+
+{% set title = 'Article Comments' %}
+
+{% block body %}
+	<div class="row">
+		<div class="col-md-12">
+			<!-- general form elements -->
+			<div class="box box-primary">
+				<div class="box-header">
+					<h3 class="box-title">Article Comments ({{comments.length}})</h3>
+				</div><!-- /.box-header -->
+				<div class="box-body">
+					<div class="form-group">
+						<label for="description">Description:</label>
+						<p>{{article.description}}</p>
+					</div>
+				</div>
+				<div class="box-footer box-comments">
+					<div class="comments-list">
+						{% for comment in comments %}
+							<div class="media">
+								<div class="media-body">
+									<h4 class="media-heading user_name">{{comment.user_id.name}}</h4>
+									{{comment.comment}}
+									{% if user %}
+										<p><small>
+											<a onclick="formSubmit('#likeArticle-form{{comment._id}}')">{{functions.isArray(comment.likes) ? comment.likes.length : '0'}} Like</a> - <a onclick="formSubmit('#dislikeArticle-form{{comment._id}}')">{{functions.isArray(comment.dislikes) ? comment.dislikes.length : '0'}} Dislike</a>
+										</small></p>
+										<form method="post" id="likeArticle-form{{comment._id}}" action="/comment/{{comment._id}}/like">
+											<input value="{{article._id}}" type="hidden" name="article_id"/>
+											<input value="{{comment._id}}" type="hidden" name="comment_id"/>
+											<input value="{{user._id}}" type="hidden" name="user_id"/>
+											<input value="1" type="hidden" name="type"/>
+										</form>
+										<form method="post" id="dislikeArticle-form{{comment._id}}" action="/comment/{{comment._id}}/dislike">
+											<input value="{{article._id}}" type="hidden" name="article_id"/>
+											<input value="{{comment._id}}" type="hidden" name="comment_id"/>
+											<input value="{{user._id}}" type="hidden" name="user_id"/>
+											<input value="0" type="hidden" name="type"/>
+										</form>
+									{% else %}
+										<p><small>
+											<a>{{functions.isArray(comment.likes) ? comment.likes.length : '0'}} Like</a> - <a>{{functions.isArray(comment.dislikes) ? comment.dislikes.length : '0'}} Dislike</a>
+										</small></p>
+									{% endif %}
+								</div>
+								<p class="pull-right"><small>{{ functions.fromNow(comment.createdAt) }}</small></p>
+							</div>
+						{% else %}
+							<p style="text-align: center;">No Comments</p>
+						{% endfor %}
+					</div>
+					{% if user %}
+						<form method="post" id="edit" action="/comment/{{article._id}}">
+							<input value="{{article._id}}" type="hidden" name="article_id"/>
+							<input value="{{user._id}}" type="hidden" name="user_id"/>
+							<div class="box-body">
+								<div class="form-group">
+									<label for="comment">Comment</label>
+									<textarea style="resize: none;" required value="{{data.comment}}" name="comment" id="comment" rows="5" class="form-control" placeholder="Comment">{{data.comment}}</textarea>
+								</div>
+							</div>
+							<button type="submit" class="btn btn-primary">Post Comment</button>
+							&nbsp;
+							<a href="/" class="btn btn-default">Article List</a>
+						</form>
+					{% else %}
+						<br>
+						<a href="/" class="btn btn-default">Article List</a>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block footerjs %}
+	<script type="text/javascript">
+		var formSubmit = function(form){ $(form).submit(); };
+	</script>
+{% endblock %}

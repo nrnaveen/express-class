@@ -1,0 +1,105 @@
+{% extends '../layout.twig' %}
+
+{% set title = 'Article List' %}
+
+{% block body %}
+	<div class="row">
+		<div class="col-md-12">
+			<!-- general form elements -->
+			<div class="box box-primary">
+				<div class="box-header">
+					<h3 class="box-title">Article List</h3>
+					<div class="pull-right padding10">
+						{% if user %}
+							<a href="/create" class="btn btn-primary" title="Create Article">
+								<i class="fa fa-plus"></i> Create Article
+							</a>
+							<a class="btn btn-primary" href="/logout" title="Logout">Logout</a>
+						{% else %}
+							<a class="btn btn-primary" href="/login" title="Login">Login</a>
+							<a class="btn btn-primary" href="/register" title="Register">Register</a>
+						{% endif %}
+					</div>
+				</div><!-- /.box-header -->
+				<div class="box-body table-responsive">
+					<table id="example2" class="table table-bordered table-hover">
+						<tbody>
+							{% for article in articles %}
+								<tr class="athing">
+									<td class="title">
+										{# <span class="rank">{{loop.index + ((currentPage - 1) * 10)}}.</span> #}
+										<span style="background-color: #00B7FF;border-radius: 50%;padding: 5px;" class="rank">{{ functions.FirstChar(article.user_id.firstname) }}{{ functions.FirstChar(article.user_id.lastname) }}</span>
+										<a class="storylink">{{article.user_id.firstname}} {{article.user_id.lastname}}</a>
+										<br><br>
+										<p>{{article.description}}</p>
+										<br>
+										<p class="displayInline">Posted {{ functions.fromNow(article.createdAt) }}</p>
+										<div class="pull-right displayInline">
+											{% if user %}
+												<form method="post" id="likeArticle-form{{article._id}}" action="/like/{{article._id}}">
+													<input value="{{article._id}}" type="hidden" name="article_id"/>
+													<input value="{{user._id}}" type="hidden" name="user_id"/>
+													<input value="1" type="hidden" name="type"/>
+												</form>
+											{% endif %}
+											{% if (user and String(user._id) == String(article.user_id._id)) %}
+												<a href="/edit/{{article._id}}" title="Edit Article">
+													<i class="fa fa-pencil-square-o"></i>
+												</a>
+												&nbsp;&nbsp;
+												<form class="delete-form displayInline" method="POST" action="/delete/{{article._id}}" onsubmit="return confirm('Are you Sure to Delete');">
+													<button style="color: #00B7FF;" class="anchorSubmit">
+														<i class="fa fa-trash"></i>
+													</button>
+												</form>
+												&nbsp;&nbsp;
+											{% endif %}
+											<a {% if user %} onclick="formSubmit('#likeArticle-form{{article._id}}')" {% else %} href="javascript:void(0);" {% endif %} title="Article Likes">
+												<i class="fa fa-heart" style="color: #00B7FF;"></i>
+											</a>
+											{{functions.isArray(article.likes) ? article.likes.length : '0'}}
+											&nbsp;&nbsp;
+											<a href="/comments/{{article._id}}" title="Article Comments">
+												<i class="fa fa-comment"></i> 
+											</a>
+											{{functions.isArray(article.comments) ? article.comments.length : '0'}} comments
+										</div>
+									</td>
+								</tr>
+							{% else %}
+								<tr>
+									<td colspan="5">
+										<p style="text-align: center;">No articles found.</p>
+									</td>
+								</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+					{% if pages.length > 0 %}
+						<nav aria-label="Page navigation example" class="mt15">
+							<ul class="pagination">
+								<li class="page-item {{ currentPage == 1 ? 'disabled' }}">
+									<a class="page-link" href="{{ currentPage == 1 ? '#' : pages[currentPage - 2].url }}">Previous</a>
+								</li>
+								{% for page in pages %}
+									<li class="page-item {{ currentPage == page.number ? 'active' }}">
+										<a class="page-link" href="{{page.url}}">{{page.number}}</a>
+									</li>
+								{% endfor %}
+								<li class="page-item {{ currentPage == pages[pages.length - 1].number ? 'disabled' }}">
+									<a class="page-link" href="{{ currentPage == pages[pages.length - 1].number ? '#' : pages[currentPage].url }}">Next</a>
+								</li>
+							</ul>
+						</nav>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block footerjs %}
+	<script type="text/javascript">
+		var formSubmit = function(form){ $(form).submit(); };
+	</script>
+{% endblock %}

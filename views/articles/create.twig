@@ -1,0 +1,168 @@
+{% extends '../layout.twig' %}
+
+{% set title = 'Create Article' %}
+
+{% block headercss %}
+	<link rel="stylesheet" href="/stylesheets/richtext.min.css">
+{% endblock %}
+
+{% block body %}
+	<div class="row">
+		<div class="col-md-12">
+			<!-- general form elements -->
+			<div class="box box-primary">
+				<div class="box-header">
+					<h3 class="box-title">Create Article</h3>
+				</div><!-- /.box-header -->
+				<form method="post" id="create" action="/save">
+					<div class="box-body">
+						<div class="form-group">
+							<label for="description">Description</label>
+							<textarea required style="resize: none;" value="{{article.description}}" name="description" id="description" rows="5" class="form-control" placeholder="Description"></textarea>
+						</div>
+					</div>
+					<div class="box-footer">
+						<button type="submit" class="btn btn-primary">Create</button>
+						&nbsp;
+						<a href="/" class="btn btn-default">Cancel</a>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block footerjs %}
+	<script src="/javascripts/jquery.richtext.min.js" type="text/javascript"></script>
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$("textarea").richText({
+				// text formatting
+				bold: true,
+				italic: true,
+				underline: true,
+
+				// text alignment
+				leftAlign: true,
+				centerAlign: true,
+				rightAlign: true,
+				justify: true,
+
+				// lists
+				ol: true,
+				ul: true,
+
+				// title
+				heading: true,
+
+				// fonts
+				fonts: true,
+				fontList: [
+					"Arial", 
+					"Arial Black", 
+					"Comic Sans MS", 
+					"Courier New", 
+					"Geneva", 
+					"Georgia", 
+					"Helvetica", 
+					"Impact", 
+					"Lucida Console", 
+					"Tahoma", 
+					"Times New Roman",
+					"Verdana"
+				],
+				fontColor: true,
+				fontSize: true,
+				// tables
+				table: true,
+
+				// code
+				removeStyles: true,
+				code: true,
+
+				// colors
+				colors: [],
+
+				// dropdowns
+				fileHTML: '',
+				imageHTML: '',
+
+				// translations
+				translations: {
+					'title': 'Title',
+					'white': 'White',
+					'black': 'Black',
+					'brown': 'Brown',
+					'beige': 'Beige',
+					'darkBlue': 'Dark Blue',
+					'blue': 'Blue',
+					'lightBlue': 'Light Blue',
+					'darkRed': 'Dark Red',
+					'red': 'Red',
+					'darkGreen': 'Dark Green',
+					'green': 'Green',
+					'purple': 'Purple',
+					'darkTurquois': 'Dark Turquois',
+					'turquois': 'Turquois',
+					'darkOrange': 'Dark Orange',
+					'orange': 'Orange',
+					'yellow': 'Yellow',
+					'imageURL': 'Image URL',
+					'fileURL': 'File URL',
+					'linkText': 'Link text',
+					'url': 'URL',
+					'size': 'Size',
+					'responsive': 'Responsive',
+					'text': 'Text',
+					'openIn': 'Open in',
+					'sameTab': 'Same tab',
+					'newTab': 'New tab',
+					'align': 'Align',
+					'left': 'Left',
+					'center': 'Center',
+					'right': 'Right',
+					'rows': 'Rows',
+					'columns': 'Columns',
+					'add': 'Add',
+					'pleaseEnterURL': 'Please enter an URL',
+					'videoURLnotSupported': 'Video URL not supported',
+					'pleaseSelectImage': 'Please select an image',
+					'pleaseSelectFile': 'Please select a file',
+					'bold': 'Bold',
+					'italic': 'Italic',
+					'underline': 'Underline',
+					'alignLeft': 'Align left',
+					'alignCenter': 'Align centered',
+					'alignRight': 'Align right',
+					'addOrderedList': 'Add ordered list',
+					'addUnorderedList': 'Add unordered list',
+					'addHeading': 'Add Heading/title',
+					'addFont': 'Add font',
+					'addFontColor': 'Add font color',
+					'addFontSize' : 'Add font size',
+					'addImage': 'Add image',
+					'addVideo': 'Add video',
+					'addFile': 'Add file',
+					'addURL': 'Add URL',
+					'addTable': 'Add table',
+					'removeStyles': 'Remove styles',
+					'code': 'Show HTML code',
+					'undo': 'Undo',
+					'redo': 'Redo',
+					'close': 'Close'
+				},
+
+				// privacy
+				youtubeCookies: false,
+
+				// developer settings
+				useSingleQuotes: false,
+				height: 0,
+				heightPercentage: 0,
+				id: "",
+				class: "",
+				useParagraph: false
+			});
+		});
+	</script>
+{% endblock %}
