@@ -1,16 +1,18 @@
-var Validator		= require('validatorjs'),
-	async			= require("async"),
-	reversePop		= require('mongoose-reverse-populate'),
-	moment			= require("moment"),
-	functions		= require("../functions"),
-	Article			= require("../models/Article"),
-	ArticleLike		= require("../models/ArticleLikes"),
-	Comment			= require("../models/Comments"),
-	Like			= require("../models/Likes");
+var Validator	= require('validatorjs'),
+	async		= require("async"),
+	reversePop	= require('mongoose-reverse-populate'),
+	moment		= require("moment"),
+	functions	= require("../functions"),
+	Article		= require("../models/Article"),
+	ArticleLike	= require("../models/ArticleLikes"),
+	Comment		= require("../models/Comments"),
+	Like		= require("../models/Likes");
 
 class ArticleController {
 
-	constructor(){}
+	constructor(){
+		// Article.schema.naveen();
+	}
 
 	// Show list of Articles
 	list(req, res){
@@ -326,4 +328,4 @@ class ArticleController {
 	}
 }
 
-module.exports = new ArticleController();
+module.exports = new ArticleController;

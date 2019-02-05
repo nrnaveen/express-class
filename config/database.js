@@ -17,5 +17,5 @@ class Database {
 };
 
 module.exports = function (app) {
-	return new Database();
+	return new Database;
 };

@@ -1,8 +1,8 @@
-var passport		= require("passport"),
-	Validator		= require('validatorjs'),
-	functions		= require("../functions"),
-	Article			= require("../models/Article"),
-	User			= require("../models/User");
+var passport	= require("passport"),
+	Validator	= require('validatorjs'),
+	functions	= require("../functions"),
+	Article		= require("../models/Article"),
+	User		= require("../models/User");
 
 class AuthController {
 
@@ -76,4 +76,4 @@ class AuthController {
 	}
 }
 
-module.exports = new AuthController();
+module.exports = new AuthController;
