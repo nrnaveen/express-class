@@ -10,7 +10,7 @@ class Database {
 			console.error('Database connection error')
 			console.error(err);
 		});
-		mongoose.set('debug', process.env.APP_DEBUG == 'true');
+		mongoose.set('debug', process.env.APP_DEBUG);
 	}
 };
 
