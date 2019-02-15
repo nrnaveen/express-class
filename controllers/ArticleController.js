@@ -1,17 +1,32 @@
-var Validator	= require('validatorjs'),
-	async		= require("async"),
-	reversePop	= require('mongoose-reverse-populate'),
-	moment		= require("moment"),
-	functions	= require("../functions"),
-	Article		= require("../models/Article"),
-	ArticleLike	= require("../models/ArticleLikes"),
-	Comment		= require("../models/Comments"),
-	Like		= require("../models/Likes");
+var Validator             = require('validatorjs'),
+    async                 = require("async"),
+    reversePop            = require('mongoose-reverse-populate'),
+    moment                = require("moment"),
+    functions             = require("../functions"),
+    Article               = require("../models/Article"),
+    ArticleLike           = require("../models/ArticleLikes"),
+    Comment               = require("../models/Comments"),
+    { Mail, Transporter } = require('../config/mail')();
+    Like                  = require("../models/Likes");
 
 class ArticleController {
 
 	constructor(){
 		// Article.schema.naveen();
+		/*Transporter.sendMail({
+			from: "noreply@nrnaveen.net",
+			to: "naveen@asareri.com",
+			subject: 'Test',
+			template: 'index',
+			context: {
+				url: 'Config.app.baseUrl',
+				resetLink: 'resetPasswordLink',
+				name: "Naveen",
+			},
+		}, function(err, info){
+			console.log(err);
+			console.log(info);
+		});*/
 	}
 
 	// Show list of Articles

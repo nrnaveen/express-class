@@ -6,6 +6,11 @@ Schema 			=	mongoose.Schema;
 
 class Article extends Schema {
 
+	/**
+     * Declare "legs" as a static property of animal with a default value of 4
+     */
+    // static legs = 4;
+
 	constructor() {
 		super({
 			description: {
@@ -28,6 +33,8 @@ class Article extends Schema {
 			},
 		}).plugin(findOrCreate).plugin(mongoosePaginate);
 	}
+
+	// naveen(){ console.log("DSFc") }
 
 }
 

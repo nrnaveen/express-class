@@ -10,6 +10,6 @@ class Routes {
 
 };
 
-module.exports = function (app) {
+module.exports = function (app, express) {
 	return new Routes(app);
 };
