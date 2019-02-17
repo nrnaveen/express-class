@@ -1,7 +1,7 @@
 var mongoose 	=	require('mongoose'),
 validators 		=	require('mongoose-validators'),
 mongoosePaginate=	require('mongoose-paginate'),
-findOrCreate 	=	require('mongoose-findorcreate')
+findOrCreate 	=	require('mongoose-findorcreate'),
 Schema 			=	mongoose.Schema;
 
 class Article extends Schema {
