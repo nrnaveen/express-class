@@ -28,6 +28,12 @@ class Mail {
 
 	getNodeMail(){
 		this.nodemail.use('compile', hbs({
+			viewEngine: {
+				// extname: '.twig',
+				layoutsDir: path.join(appRoot, 'views/emails/'),
+				// defaultLayout: path.join(appRoot, 'views/emails/'),
+				partialsDir: path.join(appRoot, 'views/emails/'),
+			},
 			viewPath: path.join(appRoot, 'views/emails/'),
 			extName: '.twig'
 		}));
