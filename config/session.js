@@ -23,6 +23,6 @@ class Session {
 
 };
 
-module.exports = function (app) {
+module.exports = (app) => {
 	return new Session(app);
 };

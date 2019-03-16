@@ -23,7 +23,7 @@ class ArticleController {
 				resetLink: 'resetPasswordLink',
 				name: "Naveen",
 			},
-		}, function(err, info){
+		}, (err, info) => {
 			console.log(err);
 			console.log(info);
 		});*/
@@ -33,16 +33,16 @@ class ArticleController {
 	list(req, res){
 		var page = req.query.page ? req.query.page : 1, limit = 10;
 		async.waterfall([
-			function(callback){ Article.paginate({}, { populate: 'user_id', page: page, limit: limit, sort: { _id: -1 }, }, callback); },
-			function(articles, callback){
+			(callback) => { Article.paginate({}, { populate: 'user_id', page: page, limit: limit, sort: { _id: -1 }, }, callback); },
+			(articles, callback) => {
 				var opts = { modelArray: articles.docs, storeWhere: "likes", arrayPop: true, mongooseModel: ArticleLike, idField: "article_id", filters: { type: true, } };
-				reversePop(opts, function(err, popArticles){ callback(err, articles, popArticles); });
+				reversePop(opts, (err, popArticles) => { callback(err, articles, popArticles); });
 			},
-			function(articles, articleLikes, callback){
+			(articles, articleLikes, callback) => {
 				var opts = { modelArray: articleLikes, storeWhere: "comments", arrayPop: true, mongooseModel: Comment, idField: "article_id" };
-				reversePop(opts, function(err, popArticles){ callback(err, articles, articleLikes, popArticles); });
+				reversePop(opts, (err, popArticles) => { callback(err, articles, articleLikes, popArticles); });
 			},
-		], function(err, articles, articleLikes, popArticles){
+		], (err, articles, articleLikes, popArticles) => {
 			if(err){
 				functions.flashError(req, res, err);
 				res.render('error', { user: req.user, });
@@ -63,7 +63,7 @@ class ArticleController {
 
 	// Show Article by id
 	show(req, res){
-		Article.findOne({ _id: req.params.id }).exec(function(err, article){
+		Article.findOne({ _id: req.params.id }).exec((err, article) => {
 			if(err){
 				functions.flashError(req, res, err);
 				res.render('error', { user: req.user, });
@@ -92,7 +92,7 @@ class ArticleController {
 		}else{
 			data.user_id = req.user._id;
 			var article = new Article(data);
-			article.save(function(err){
+			article.save((err) => {
 				if(err){
 					functions.flashError(req, res, err);
 					res.render("articles/create", { user: req.user, });
@@ -107,7 +107,7 @@ class ArticleController {
 
 	// Edit an Article
 	edit(req, res){
-		Article.findOne({ _id: req.params.id }).exec(function(err, article){
+		Article.findOne({ _id: req.params.id }).exec((err, article) => {
 			if(err){
 				functions.flashError(req, res, err);
 				res.render('error', { user: req.user, });
@@ -131,7 +131,7 @@ class ArticleController {
 		}else{
 			Article.findByIdAndUpdate(req.params.id, {
 				$set: { description: req.body.description, }
-			}, { new: true }, function(err, article){
+			}, { new: true }, (err, article) => {
 				if(err){
 					functions.flashError(req, res, err);
 					res.render("articles/edit", { article: req.body, user : req.user, });
@@ -158,12 +158,12 @@ class ArticleController {
 				res.redirect('/');
 			}
 		}else{
-			Article.findOne({ _id: req.params.id }).exec(function(err, comment){
+			Article.findOne({ _id: req.params.id }).exec((err, comment) => {
 				if(err){
 					functions.flashError(req, res, err);
 					res.render('error', { user: req.user, });
 				}else if(comment){
-					ArticleLike.findOrCreate({ article_id: data.article_id, user_id: req.user._id, }, { article_id: data.article_id, user_id: req.user._id, }, function(err, like){
+					ArticleLike.findOrCreate({ article_id: data.article_id, user_id: req.user._id, }, { article_id: data.article_id, user_id: req.user._id, }, (err, like) => {
 						if(err){
 							functions.flashError(req, res, err);
 							res.redirect('/');
@@ -182,7 +182,7 @@ class ArticleController {
 
 	// Delete an Article
 	delete(req, res){
-		Article.remove({ _id: req.params.id, user_id: req.user._id, }, function(err){
+		Article.remove({ _id: req.params.id, user_id: req.user._id, }, (err) => {
 			if(err){
 				functions.flashError(req, res, err);
 				res.render('error', { user : req.user, });
@@ -196,21 +196,21 @@ class ArticleController {
 	// Show Article Comments
 	comments(req, res){
 		async.waterfall([
-			function(callback){ Article.findOne({ _id: req.params.id, }).exec(callback); },
-			function(article, callback){
+			(callback) => { Article.findOne({ _id: req.params.id, }).exec(callback); },
+			(article, callback) => {
 				if(article){
-					Comment.find({ article_id: article._id }).populate('user_id').exec(function(err, comments){ callback(err, article, comments); });
+					Comment.find({ article_id: article._id }).populate('user_id').exec((err, comments) => { callback(err, article, comments); });
 				}else{ callback({ error: "Article Not Found", }); }
 			},
-			function(article, comments, callback){
+			(article, comments, callback) => {
 				var opts = { modelArray: comments, storeWhere: "likes", arrayPop: true, mongooseModel: Like, idField: "comment_id", filters: { type: true, } };
-				reversePop(opts, function(err, popComments){ callback(err, article, comments, popComments); });
+				reversePop(opts, (err, popComments) => { callback(err, article, comments, popComments); });
 			},
-			function(article, comments, likes, callback){
+			(article, comments, likes, callback) => {
 				var opts = { modelArray: likes, storeWhere: "dislikes", arrayPop: true, mongooseModel: Like, idField: "comment_id", filters: { type: false, }  };
-				reversePop(opts, function(err, popComments){ callback(err, article, comments, likes, popComments); });
+				reversePop(opts, (err, popComments) => { callback(err, article, comments, likes, popComments); });
 			}
-		], function(err, article, comments, likes, dislikes){
+		], (err, article, comments, likes, dislikes) => {
 			if(err){
 				functions.flashError(req, res, err);
 				res.render('error', { user: req.user, });
@@ -241,13 +241,13 @@ class ArticleController {
 				res.redirect('/');
 			}
 		}else{
-			Article.findOne({ _id: req.params.id }).exec(function(err, article){
+			Article.findOne({ _id: req.params.id }).exec((err, article) => {
 				if(err){
 					functions.flashError(req, res, err);
 					res.render('error', { user: req.user, });
 				}else if(article){
 					var comment = new Comment(data);
-					comment.save(function(err){
+					comment.save((err) => {
 						if(err){
 							functions.flashError(req, res, err);
 							res.redirect('/comments/' + data.article_id);
@@ -281,12 +281,12 @@ class ArticleController {
 				res.redirect('/');
 			}
 		}else{
-			Comment.findOne({ _id: req.params.id }).exec(function(err, comment){
+			Comment.findOne({ _id: req.params.id }).exec((err, comment) => {
 				if(err){
 					functions.flashError(req, res, err);
 					res.render('error', { user: req.user, });
 				}else if(comment){
-					Like.findOrCreate({ comment_id: data.comment_id, user_id: req.user._id, type: data.type, }, { comment_id: data.comment_id, user_id: req.user._id, type: data.type, }, function(err, like){
+					Like.findOrCreate({ comment_id: data.comment_id, user_id: req.user._id, type: data.type, }, { comment_id: data.comment_id, user_id: req.user._id, type: data.type, }, (err, like) => {
 						if(err){
 							functions.flashError(req, res, err);
 							res.redirect('/comments/' + data.article_id);
@@ -320,12 +320,12 @@ class ArticleController {
 				res.redirect('/');
 			}
 		}else{
-			Comment.findOne({ _id: req.params.id }).exec(function(err, comment){
+			Comment.findOne({ _id: req.params.id }).exec((err, comment) => {
 				if(err){
 					functions.flashError(req, res, err);
 					res.render('error', { user: req.user, });
 				}else if(comment){
-					Like.findOrCreate({ comment_id: data.comment_id, user_id: req.user._id, type: data.type, }, { comment_id: data.comment_id, user_id: req.user._id, type: data.type, }, function(err, dislike){
+					Like.findOrCreate({ comment_id: data.comment_id, user_id: req.user._id, type: data.type, }, { comment_id: data.comment_id, user_id: req.user._id, type: data.type, }, (err, dislike) => {
 						if(err){
 							functions.flashError(req, res, err);
 							res.redirect('/comments/' + data.article_id);

@@ -41,7 +41,7 @@ class Mail {
 	}
 };
 
-module.exports = function () {
+module.exports = () => {
 	var mail = new Mail;
 	return {
 		Mail: mail,

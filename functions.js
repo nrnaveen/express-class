@@ -15,7 +15,7 @@ var Async			=	require("async"),
 class LocalFunctions {
 	// get Href value of pagination array
 	href(req){
-		return function(prev, params){
+		return (prev, params) => {
 			var query = lodash.clone(req.query);
 			if(typeof query.page === 'undefined'){ query.page = 1; }
 			if(typeof prev === 'object'){
@@ -37,7 +37,7 @@ class LocalFunctions {
 	// get pagination array
 	getArrayPages(req){
 		var _this = this;
-		return function(limit, pageCount, currentPage){
+		return (limit, pageCount, currentPage) => {
 			var maxPage = pageCount, limit = limit || 3; // limit default is 3
 			if(limit > 0){
 				var end = Math.min(Math.max(currentPage + Math.floor(limit / 2), limit), pageCount),

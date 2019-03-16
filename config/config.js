@@ -15,6 +15,6 @@ class Configuration {
 
 };
 
-module.exports = function (app, express) {
+module.exports = (app, express) => {
 	return new Configuration(app, express);
 };

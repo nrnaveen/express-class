@@ -10,6 +10,6 @@ class Views {
 
 };
 
-module.exports = function (app) {
+module.exports = (app) => {
 	return new Views(app);
 };

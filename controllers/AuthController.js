@@ -26,7 +26,7 @@ class AuthController {
 			return res.status(400).render('register', { data: data, user: req.user, });
 		}else{
 			var user = new User({ email: req.body.email, name: req.body.name, });
-			User.register(user, req.body.password, function(err, user){
+			User.register(user, req.body.password, (err, user) => {
 				if(err){
 					functions.flashError(req, res, err);
 					return res.render('register', { data: data, user: user });
@@ -34,7 +34,7 @@ class AuthController {
 				passport.authenticate('local', {
 					failureFlash: true,
 					failureRedirect: "/register",
-				})(req, res, function(){
+				})(req, res, () => {
 					req.flash("success", 'Registered Successfully.');
 					return res.redirect('/');
 				});
@@ -61,7 +61,7 @@ class AuthController {
 			passport.authenticate('local', {
 				failureFlash: true,
 				failureRedirect: "/login",
-			})(req, res, function(){
+			})(req, res, () => {
 				req.flash("success", 'Logged In Successfully.');
 				return res.redirect('/');
 			});

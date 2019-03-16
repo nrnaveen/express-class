@@ -14,6 +14,6 @@ class Database {
 	}
 };
 
-module.exports = function (app) {
+module.exports = (app) => {
 	return new Database;
 };
