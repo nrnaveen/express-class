@@ -1,8 +1,7 @@
 var passport  = require("passport"),
     Validator = require('validatorjs'),
     functions = require("../functions"),
-    Article   = require("../models/Article"),
-    User      = require("../models/User");
+    { Article, User, }   = require("../models");
 
 class AuthController {
 

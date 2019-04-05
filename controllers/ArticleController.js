@@ -1,13 +1,18 @@
-var Validator             = require('validatorjs'),
-    async                 = require("async"),
-    reversePop            = require('mongoose-reverse-populate'),
-    moment                = require("moment"),
-    functions             = require("../functions"),
-    Article               = require("../models/Article"),
-    ArticleLike           = require("../models/ArticleLikes"),
-    Comment               = require("../models/Comments"),
-    { Mail, Transporter } = require('../config/mail')();
-    Like                  = require("../models/Likes");
+var Validator      = require('validatorjs'),
+    async          = require("async"),
+    reversePop     = require('mongoose-reverse-populate'),
+    moment         = require("moment"),
+    functions      = require("../functions"),
+    {
+    	Article,
+    	ArticleLike,
+    	Comment,
+    	Like
+    }              = require("../models"),
+    {
+    	Mail,
+    	Transporter
+    }              = require('../config/mail')();
 
 class ArticleController {
 

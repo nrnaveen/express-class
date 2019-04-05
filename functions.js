@@ -8,7 +8,6 @@ var Async			=	require("async"),
 	path			=	require("path"),
 	_				=	require("underscore"),
 	crypto			=	require('crypto'),
-	Article			=	require("./models/Article"),
 	algorithm		=	'aes-256-ctr',
 	password		=	'd6F3Efeq';
 
