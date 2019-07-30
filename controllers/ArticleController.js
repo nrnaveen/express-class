@@ -1,6 +1,8 @@
 var Validator      = require('validatorjs'),
     async          = require("async"),
-    reversePop     = require('mongoose-reverse-populate'),
+	// reversePop     = require('mongoose-reverse-populate'),
+	{reversePop}     = require('../models/reversePop'),
+	lodash         = require('lodash'),
     moment         = require("moment"),
     functions      = require("../functions"),
     {
@@ -17,8 +19,10 @@ var Validator      = require('validatorjs'),
 class ArticleController {
 
 	constructor(){
-		// Article.schema.naveen();
-		/*Transporter.sendMail({
+		Article.schema.naveen();
+		console.log(Article.schema.statics);
+		console.log(Article.listForUser);
+		/* Transporter.sendMail({
 			from: "noreply@nrnaveen.net",
 			to: "naveen@asareri.com",
 			subject: 'Test',
@@ -31,11 +35,66 @@ class ArticleController {
 		}, (err, info) => {
 			console.log(err);
 			console.log(info);
-		});*/
+		}); */
 	}
 
 	// Show list of Articles
-	list(req, res){
+	async list(req, res){
+		var page = req.query.page ? req.query.page : 1, limit = 10;
+		try {
+			var articles = await Article.paginate({}, { populate: 'user_id', page: page, limit: limit, sort: { _id: -1 }, });
+			var opts = { modelArray: articles.docs, storeWhere: "likes", arrayPop: true, mongooseModel: ArticleLike, idField: "article_id", filters: { type: true, } };
+			var articleLikes = await Article.reversePop(opts);
+			var opts = { modelArray: articleLikes, storeWhere: "comments", arrayPop: true, mongooseModel: Comment, idField: "article_id" };
+			var popArticles = await Article.reversePop(opts);
+			var pages = functions.getArrayPages(req)(10, articles.pages, page);
+			res.status(200).render('articles/index', {
+				functions: functions,
+				String: String,
+				articles: popArticles,
+				pages: pages,
+				currentPage: page,
+				total: articles.total,
+				user: req.user,
+			});
+		}catch(e) {
+			functions.flashError(req, res, e);
+			res.render('error', { user: req.user, });
+		}
+	}
+
+	async list2(req, res){
+		var page = req.query.page ? req.query.page : 1, limit = 10;
+		async.waterfall([
+			(callback) => { Article.paginate({}, { populate: 'user_id', page: page, limit: limit, sort: { _id: -1 }, }, callback); },
+			(articles, callback) => {
+				var opts = { modelArray: articles.docs, storeWhere: "likes", arrayPop: true, mongooseModel: ArticleLike, idField: "article_id", filters: { type: true, } };
+				reversePop(opts).then((popArticles) => { callback(null, articles, popArticles); }).catch(callback);
+			},
+			(articles, articleLikes, callback) => {
+				var opts = { modelArray: articleLikes, storeWhere: "comments", arrayPop: true, mongooseModel: Comment, idField: "article_id" };
+				reversePop(opts).then((popArticles) => { callback(null, articles, articleLikes, popArticles); }).catch(callback);
+			},
+		], (err, articles, articleLikes, popArticles) => {
+			if(err){
+				functions.flashError(req, res, err);
+				res.render('error', { user: req.user, });
+			}else{
+				var pages = functions.getArrayPages(req)(10, articles.pages, page);
+				res.status(200).render('articles/index', {
+					functions: functions,
+					String: String,
+					articles: popArticles,
+					pages: pages,
+					currentPage: page,
+					total: articles.total,
+					user: req.user,
+				});
+			}
+		});
+	}
+
+	async list1(req, res){
 		var page = req.query.page ? req.query.page : 1, limit = 10;
 		async.waterfall([
 			(callback) => { Article.paginate({}, { populate: 'user_id', page: page, limit: limit, sort: { _id: -1 }, }, callback); },
@@ -67,27 +126,33 @@ class ArticleController {
 	}
 
 	// Show Article by id
-	show(req, res){
-		Article.findOne({ _id: req.params.id }).exec((err, article) => {
-			if(err){
-				functions.flashError(req, res, err);
-				res.render('error', { user: req.user, });
-			}else if(article){
-				res.render("articles/show", { article: article, user: req.user, });
-			}else{
-				req.flash("error", 'Article not found.');
-				res.redirect("/");
-			}
-		});
+	async show(req, res){
+		try {
+			var article = await Article.findOne({ _id: req.params.id });
+		}catch(e){
+			functions.flashError(req, res, e);
+			res.render('error', { user: req.user, });
+		}
+		// Article.findOne({ _id: req.params.id }).exec((err, article) => {
+		// 	if(err){
+		// 		functions.flashError(req, res, err);
+		// 		res.render('error', { user: req.user, });
+		// 	}else if(article){
+		// 		res.render("articles/show", { article: article, user: req.user, });
+		// 	}else{
+		// 		req.flash("error", 'Article not found.');
+		// 		res.redirect("/");
+		// 	}
+		// });
 	}
 
 	// Create new Article
-	create(req, res){
+	async create(req, res){
 		res.render("articles/create", { user: req.user, });
 	}
 
 	// Save new Article
-	save(req, res){
+	async save(req, res){
 		var data = req.body, rules = { description: "required", },
 		validation = new Validator(data, rules);
 		if(validation.fails()){
@@ -111,22 +176,22 @@ class ArticleController {
 	}
 
 	// Edit an Article
-	edit(req, res){
-		Article.findOne({ _id: req.params.id }).exec((err, article) => {
-			if(err){
-				functions.flashError(req, res, err);
-				res.render('error', { user: req.user, });
-			}else if(article){
-				res.render("articles/edit", { article: article, user: req.user, });
-			}else{
+	async edit(req, res){
+		try {
+			var article = await Article.findOne({ _id: req.params.id });
+			if(!article){
 				req.flash("error", 'Article not found.');
-				res.redirect("/");
+				return res.redirect("/");
 			}
-		});
+			return res.render("articles/edit", { article: article, user: req.user, });
+		}catch(e){
+			functions.flashError(req, res, e);
+			return res.render('error', { user: req.user, });
+		}
 	}
 
 	// Update an Article
-	update(req, res){
+	async update(req, res){
 		var data = req.body, rules = { description: "required", },
 		validation = new Validator(data, rules);
 		if(validation.fails()){
@@ -149,7 +214,7 @@ class ArticleController {
 	}
 
 	// Like Article
-	likeArticle(req, res){
+	async likeArticle(req, res){
 		var data = req.body, rules = {
 			article_id: "required",
 			user_id: "required",
@@ -186,7 +251,7 @@ class ArticleController {
 	}
 
 	// Delete an Article
-	delete(req, res){
+	async delete(req, res){
 		Article.remove({ _id: req.params.id, user_id: req.user._id, }, (err) => {
 			if(err){
 				functions.flashError(req, res, err);
@@ -199,7 +264,7 @@ class ArticleController {
 	}
 
 	// Show Article Comments
-	comments(req, res){
+	async comments(req, res){
 		async.waterfall([
 			(callback) => { Article.findOne({ _id: req.params.id, }).exec(callback); },
 			(article, callback) => {
@@ -231,7 +296,7 @@ class ArticleController {
 	}
 
 	// Save new Article Comment
-	createComment(req, res){
+	async createComment(req, res){
 		var data = req.body, rules = {
 			comment: "required",
 			article_id: "required",
@@ -270,7 +335,7 @@ class ArticleController {
 	}
 
 	// Like Comment
-	likeComment(req, res){
+	async likeComment(req, res){
 		var data = req.body, rules = {
 			article_id: "required",
 			comment_id: "required",
@@ -309,7 +374,7 @@ class ArticleController {
 	}
 
 	// Dislike Comment
-	dislikeComment(req, res){
+	async dislikeComment(req, res){
 		var data = req.body, rules = {
 			article_id: "required",
 			comment_id: "required",
