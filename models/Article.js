@@ -1,6 +1,7 @@
 var mongoose 	=	require('mongoose'),
 validators 		=	require('mongoose-validators'),
 mongoosePaginate=	require('mongoose-paginate'),
+reversePop		=	require('./reversePop'),
 findOrCreate 	=	require('mongoose-findorcreate'),
 Schema 			=	mongoose.Schema;
 
@@ -31,9 +32,36 @@ class Article extends Schema {
 			toJSON: {
 				virtuals: true, // enable virtual fields
 			},
-		}).plugin(findOrCreate).plugin(mongoosePaginate);
+		}).plugin(findOrCreate).plugin(mongoosePaginate).plugin(reversePop);
 	}
 
+	statics = {
+		async create(username, threadBody) {
+			try {
+				threadBody.username = username;
+				const thread = new this(threadBody)
+				return await thread.save();
+			}catch(e) {
+				return Promise.reject(e);
+			}
+		},
+		async listForUser(username, { limit=10, skip=0 }) {
+			try {
+				const threads = await this.find({ username }).skip(parseInt(skip)).limit(parseInt(limit));
+				return threads;
+			}catch(e) {
+				return Promise.reject(e);
+			}
+		},
+		async get(_id) {
+			try {
+				const thread = await this.findOne({ _id });
+				return thread;
+			}catch(e) {
+				return Promise.reject(e);
+			}
+		}
+	}
 	// naveen(){ console.log("DSFc") }
 
 }
