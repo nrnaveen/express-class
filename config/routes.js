@@ -1,15 +1,13 @@
-var indexRouter = require('../routes/index'),
-	usersRouter = require('../routes/users');
+const indexRouter = require("../routes/index");
+const usersRouter = require("../routes/users");
 
 class Routes {
-
-	constructor(app) {
-		app.use('/', indexRouter);
-		app.use('/users', usersRouter);
-	}
-
-};
+  constructor(app) {
+    app.use("/", indexRouter);
+    app.use("/users", usersRouter);
+  }
+}
 
 module.exports = (app, express) => {
-	return new Routes(app);
+  return new Routes(app);
 };

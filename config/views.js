@@ -1,15 +1,13 @@
-var path = require('path');
+var path = require("path");
 
 class Views {
-
-	constructor(app) {
-		// view engine setup
-		app.set('views', path.join(appRoot, 'views'));
-		app.set('view engine', 'twig');
-	}
-
-};
+  constructor(app) {
+    // view engine setup
+    app.set("views", path.join(appRoot, "views"));
+    app.set("view engine", "twig");
+  }
+}
 
 module.exports = (app) => {
-	return new Views(app);
+  return new Views(app);
 };
