@@ -8,6 +8,7 @@ require("dotenv").config();
 require("./config/database")(app);
 require("./config/views")(app);
 require("./config/config")(app, express);
+require("./config/middleware")(app);
 require("./config/session")(app);
 require("./config/passport")(app);
 require("./config/admin")(app);
